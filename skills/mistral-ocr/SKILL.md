@@ -1,62 +1,63 @@
----
-name: mistral-ocr
-description: Convert PDF to Markdown with images using Mistral OCR.
-homepage: https://mistral.ai/
-metadata:
-  {
-    "openclaw":
-      {
-        "emoji": "📄",
-        "requires": { "bins": ["uv"], "env": ["MISTRAL_API_KEY"] },
-        "primaryEnv": "MISTRAL_API_KEY",
-        "install":
-          [
-            {
-              "id": "uv-brew",
-              "kind": "brew",
-              "formula": "uv",
-              "bins": ["uv"],
-              "label": "Install uv (brew)",
-            },
-          ],
-      },
+# Mistral OCR Skill
+
+This skill allows OpenClaw to convert PDF documents into Markdown with extracted images using the Mistral OCR API.
+
+## Overview
+
+- **Name**: `mistral-ocr`
+- **Description**: Convert PDF to Markdown with images using Mistral OCR.
+- **Author**: sldyns (Kun Qian)
+- **Repository**: https://github.com/sldyns/mistral-ocr-skill
+
+## Prerequisite
+
+- **Mistral API Key**: Get one from [Mistral AI Console](https://console.mistral.ai/).
+- **Python Environment**: Requires `uv` for dependency management.
+
+## Configuration
+
+Set your API key in `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "skills": {
+    "mistral-ocr": {
+      "apiKey": "YOUR_MISTRAL_API_KEY"
+    }
   }
----
+}
+```
 
-# Mistral OCR
+Or use the environment variable `MISTRAL_API_KEY`.
 
-Convert PDF documents to Markdown, extracting text and images.
+## Usage
 
-Usage:
+### Convert a PDF
 
 ```bash
 uv run --with mistralai {baseDir}/ocr_processor.py --pdf_path "/path/to/document.pdf" --api_key "$MISTRAL_API_KEY"
 ```
 
-Configuration:
+The script will:
+1. Upload the PDF to Mistral.
+2. Process it using the `mistral-ocr-latest` model.
+3. Extract images and save them locally.
+4. Generate a Markdown file with correct image references.
+5. Return a JSON object with the result paths.
 
-- `MISTRAL_API_KEY`: Set this environment variable or configure it in `~/.openclaw/openclaw.json` under `skills."mistral-ocr".env.MISTRAL_API_KEY`.
+### Output Structure
 
-Output:
+The output will be saved in a directory named after the PDF file (sanitized).
 
-The script returns a JSON object with the path to the generated Markdown file and extracted images.
-
----
-
-# Mistral OCR (中文说明)
-
-使用 Mistral OCR 将 PDF 文档转换为 Markdown 格式，并提取文本和图片。
-
-使用方法：
-
-```bash
-uv run --with mistralai {baseDir}/ocr_processor.py --pdf_path "/path/to/document.pdf" --api_key "$MISTRAL_API_KEY"
+```text
+/path/to/document_folder/
+  ├── document_name.md       # The generated Markdown
+  ├── image_1_1.png          # Extracted images
+  └── image_1_2.png
 ```
 
-配置说明：
+## Troubleshooting
 
-- `MISTRAL_API_KEY`：设置此环境变量，或在 `~/.openclaw/openclaw.json` 中的 `skills."mistral-ocr".env.MISTRAL_API_KEY` 下进行配置。
-
-输出结果：
-
-脚本返回一个 JSON 对象，包含生成的 Markdown 文件路径和提取的图片信息。
+- **API Key Error**: Ensure `MISTRAL_API_KEY` is set correctly.
+- **File Access**: Ensure the PDF path is absolute and readable.
+- **Network**: Check your internet connection to Mistral API.
